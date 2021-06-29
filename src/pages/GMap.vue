@@ -23,7 +23,7 @@ export default defineComponent({
         streetViewControl: false,
       });
 
-      // find and place markders on all online ninjas   
+      // find and place markders on all online ninjas
       fireDB
         .collection("ninjas")
         .where("online", "==", true)
@@ -50,79 +50,60 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      // get current user
-      fireAuth.onAuthStateChanged((user) => {
-        if (user) {
-          console.log("current user | GMap: ", user);
+      renderMap()
+    })
 
-          // get user geolocation
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (pos) => {
-                lat.value = pos.coords.latitude;
-                lng.value = pos.coords.longitude;
+    // onMounted(() => {
+    //   // get current user
+    //   fireAuth.onAuthStateChanged((user) => {
+    //     if (user) {
+    //       console.log("current user id | GMap: ", user.uid);
 
-                // update ninja geolocation
-                fireDB
-                  .collection("ninjas")
-                  .where("user_id", "==", user.uid)
-                  .get()
-                  .then((snapshot) => {
-                    snapshot.forEach((doc) => {
-                      fireDB
-                        .collection("ninjas")
-                        .doc(doc.id)
-                        .update({
-                          geolocation: {
-                            lat: lat.value,
-                            lng: lng.value,
-                          },
-                        });
-                    });
-                  })
-                  .then(() => {
-                    renderMap();
-                  });
+    //       // get user geolocation
+    //       if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(
+    //           (pos) => {
+    //             lat.value = pos.coords.latitude;
+    //             lng.value = pos.coords.longitude;
 
-                // find all online ninjas and then update geocoords
-                // fireDB
-                //   .collection("ninjas")
-                //   .where("online", "==", true)
-                //   .get()
-                //   .then((snapshot) => {
-                //     snapshot.forEach((doc) => {
-                //       console.log('online ninja id: ', doc.id)
-                //       fireDB
-                //         .collection("ninjas")
-                //         .doc(doc.id)
-                //         .update({
-                //           geolocation: {
-                //             lat: lat.value,
-                //             lng: lng.value,
-                //           },
-                //         });
-                //     });
-                //   })                  
-                //   .then(() => {
-                //     renderMap();
-                //   });
-              },
-              (err) => {
-                console.log(err);
-                renderMap();
-              },
-              { maximumAge: 60000, timeout: 3000 }
-            );
-          } else {
-            // position center by default value
-            console.log('there is no user logged in | GMap')
-            // lat.value = null
-            // lng.value = null
-            renderMap();            
-          }
-        }
-      });
-    });
+    //             // update ninja geolocation
+    //             fireDB
+    //               .collection("ninjas")
+    //               .where("user_id", "==", user.uid)
+    //               .get()
+    //               .then((snapshot) => {
+    //                 snapshot.forEach((doc) => {
+    //                   fireDB
+    //                     .collection("ninjas")
+    //                     .doc(doc.id)
+    //                     .update({
+    //                       geolocation: {
+    //                         lat: lat.value,
+    //                         lng: lng.value,
+    //                       },
+    //                     });
+    //                 });
+    //               })
+    //               .then(() => {
+    //                 renderMap();
+    //               });
+    //           },
+    //           (err) => {
+    //             console.log(err);
+    //             renderMap();
+    //           },
+    //           { maximumAge: 60000, timeout: 3000 }
+    //         );
+    //       } else {
+    //         // position center by default value
+    //         console.log("there is no user logged in | GMap");
+    //         // lat.value = null
+    //         // lng.value = null
+    //         renderMap();
+    //       }
+    //     }
+    //   });
+    // });
 
     return {
       map,

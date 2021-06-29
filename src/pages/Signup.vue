@@ -34,6 +34,8 @@ export default defineComponent({
     const password = ref(null);
     const alias = ref(null);
     const feedback = ref(null);
+    const lat = ref(null)
+    const lng = ref(null)
 
     const router = useRouter()
 
@@ -60,13 +62,23 @@ export default defineComponent({
               .createUserWithEmailAndPassword(email.value, password.value)
               .then((cred) => {
                 console.log("signup user: ", cred.user);
-                ref.set({
-                  alias: slug.value,
-                  // alias: alias.value,
-                  geolocation: null,
-                  user_id: cred.user.uid,
-                  online: true
-                })
+                 if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                      lat.value = pos.coords.latitude;
+                      lng.value = pos.coords.longitude;
+                      ref.set({
+                        // alias: slug.value,
+                        alias: alias.value,
+                        geolocation: {
+                          lat: lat.value,
+                          lng: lng.value
+                        },
+                        user_id: cred.user.uid,
+                        online: true
+                      })
+                    })
+                 }
               }).then(() => {
                 router.push('/')
               })

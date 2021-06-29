@@ -39,25 +39,24 @@ export default defineComponent({
 
     const logout = () => {
       // set user online status to false
-      fireDB
-        .collection("ninjas")
-        // .where("user_id", "==", userId)
-        .where("user_id", "==", user.value.uid)
-        .get()
-        .then((snapshot) => {
-          snapshot.forEach((doc) => {
+      // fireDB
+      //   .collection("ninjas")
+      //   .where("user_id", "==", user.value.uid)
+      //   .get()
+      //   .then((snapshot) => {
+      //     snapshot.forEach((doc) => {
             fireDB
               .collection("ninjas")
-              .doc(doc.id)
+              .doc(user.value.uid)
               .update({
                 geolocation: {
                   lat: null,
                   lng: null,
                 },
                 online: false,
-              });
-          });
-        })
+              })
+        //   });
+        // })
         .then(() => {
           fireAuth.signOut().then(() => {
             console.log("user logout | menu");
