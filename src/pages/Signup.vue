@@ -61,10 +61,11 @@ export default defineComponent({
               .then((cred) => {
                 console.log("signup user: ", cred.user);
                 ref.set({
-                  alias: alias.value,
-                  geolocation: null,
+                  email: email.value,
                   user_id: cred.user.uid,
-                  online: true
+                  alias: alias.value,
+                  online: true,
+                  geolocation: null,
                 })
               }).then(() => {
                 router.push('/')
