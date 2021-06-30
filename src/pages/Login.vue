@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, inject } from "vue";
 import { fireAuth, fireDB } from "src/boot/firebase";
 import { useRouter } from "vue-router";
 
@@ -32,6 +32,8 @@ export default defineComponent({
 
     const router = useRouter();
 
+    const store = inject("store");
+
     const login = () => {
       if (email.value && password.value) {
         // fireDB.collection('ninjas').
@@ -39,6 +41,10 @@ export default defineComponent({
           .signInWithEmailAndPassword(email.value, password.value)
           .then((cred) => {
             console.log("current user | login: ", cred.user);
+
+            store.state.user = cred.user
+            console.log("current user | store: ", store.state.user);
+
             fireDB
               .collection("ninjas")
               .where("user_id", "==", cred.user.uid)

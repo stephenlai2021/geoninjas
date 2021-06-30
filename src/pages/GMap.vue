@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, inject } from "vue";
 import { fireAuth, fireDB } from "src/boot/firebase";
 
 export default defineComponent({
@@ -13,6 +13,9 @@ export default defineComponent({
     const lat = ref(0);
     const lng = ref(0);
     const map = ref(null);
+    const user = ref(null);
+
+    const store = inject("store");
 
     const renderMap = () => {
       const map = new google.maps.Map(document.getElementById("map"), {
@@ -51,53 +54,55 @@ export default defineComponent({
 
     onMounted(() => {
       // get current user
-      fireAuth.onAuthStateChanged((user) => {
-        if (user) {
-          console.log("current user id | GMap: ", user.uid);
+      store.methods.handleAuthStateChanged()
+      user.value = store.state.user
 
-          // get user geolocation
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (pos) => {
-                lat.value = pos.coords.latitude;
-                lng.value = pos.coords.longitude;
+      if (user.value) {
+        console.log("current user id | store in GMap: ", user.value.uid);
 
-                // update ninja geolocation
-                fireDB
-                  .collection("ninjas")
-                  .where("user_id", "==", user.uid)
-                  .get()
-                  .then((snapshot) => {
+        // get user geolocation
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              lat.value = pos.coords.latitude;
+              lng.value = pos.coords.longitude;
+
+              // update ninja geolocation
+              fireDB
+                .collection("ninjas")
+                .where("user_id", "==", user.value.uid)
+                .get()
+                .then((snapshot) => {
                   // .onSnapshot((snapshot) => {
-                    snapshot.forEach((doc) => {
-                      fireDB
-                        .collection("ninjas")
-                        .doc(doc.id)
-                        .update({
-                          geolocation: {
-                            lat: lat.value,
-                            lng: lng.value,
-                          },
-                        });
-                    });
-                  })
-                  .then(() => {
-                    renderMap();
+                  snapshot.forEach((doc) => {
+                    fireDB
+                      .collection("ninjas")
+                      .doc(doc.id)
+                      .update({
+                        geolocation: {
+                          lat: lat.value,
+                          lng: lng.value,
+                        },
+                      });
                   });
-              },
-              (err) => {
-                console.log(err);
-                renderMap();
-              },
-              { maximumAge: 60000, timeout: 3000 }
-            );
-          } else {
-            // position center by default value
-            console.log("there is no user logged in | GMap");
-            renderMap();
-          }
+                })
+                .then(() => {
+                  renderMap();
+                });
+            },
+            (err) => {
+              console.log(err);
+              renderMap();
+            }
+            // { maximumAge: 60000, timeout: 3000 }
+          );
+        } else {
+          // position center by default value
+          console.log("there is no user logged in | GMap");
+          renderMap();
         }
-      });
+      }
+      // });
     });
 
     return {

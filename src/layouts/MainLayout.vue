@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, inject } from "vue";
 import { fireAuth, fireDB } from "src/boot/firebase";
 import { useRouter } from "vue-router";
 
@@ -28,47 +28,48 @@ export default defineComponent({
   setup() {
     const router = useRouter();
 
+    const store = inject("store");
+
     const user = ref(null);
 
     onMounted(() => {
-      fireAuth.onAuthStateChanged((_user) => {
-        if (_user) user.value = _user;
-        if (!_user) user.value = null;
-      });
+      store.methods.handleAuthStateChanged()
+      if (store.state.user) user.value = store.state.user
+      if (!store.state.user) user.value = null
     });
 
     const logout = () => {
       // get current user
-      // let user = fireAuth.currentUser
+      let user = store.state.user;
+      // console.log("user logout | menu", user);
 
-      fireAuth.onAuthStateChanged((user) => {
-        if (user) {
-          fireDB
-            .collection("ninjas")
-            .where("user_id", "==", user.uid)
-            .get()
-            .then((snapshot) => {
-              snapshot.forEach((doc) => {
-                fireDB
-                  .collection("ninjas")
-                  .doc(doc.id)
-                  .update({
-                    geolocation: {
-                      lat: 0,
-                      lng: 0,
-                    },
-                    online: false,
-                  });
-              });
-            })
-            .then(() => {
-              fireAuth.signOut().then(() => {
-                console.log("user logout | menu");
-                router.push("/login");
-              });
+      if (user) {
+        console.log("user id | logout", user.uid);
+        fireDB
+          .collection("ninjas")
+          .where("user_id", "==", user.uid)
+          .get()
+          .then((snapshot) => {
+            snapshot.forEach((doc) => {
+              fireDB
+                .collection("ninjas")
+                .doc(doc.id)
+                .update({
+                  geolocation: {
+                    lat: 0,
+                    lng: 0,
+                  },
+                  online: false,
+                });
             });
-        }
-      });
+          })
+          .then(() => {
+            fireAuth.signOut().then(() => {
+              console.log("user logout | menu");
+              router.push("/login");
+            });
+          });
+      }
     };
 
     return {
