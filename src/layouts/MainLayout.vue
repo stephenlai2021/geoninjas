@@ -32,7 +32,7 @@ export default defineComponent({
 
     const user = ref(null);
 
-    onMounted(() => {      
+    onMounted(() => {
       fireAuth.onAuthStateChanged((_user) => {
         if (_user) user.value = _user;
         if (!_user) user.value = null;
@@ -41,37 +41,36 @@ export default defineComponent({
 
     const logout = () => {
       // get current user
-      store.methods.handleAuthStateChanged()
-      let user = store.state.user;
-      console.log("user logout | menu123", user);
+      store.methods.handleAuthStateChanged();
 
-      if (user) {
-        console.log("user id | logout", user.uid);
-        fireDB
-          .collection("ninjas")
-          .where("user_id", "==", user.uid)
-          .get()
-          .then((snapshot) => {
-            snapshot.forEach((doc) => {
-              fireDB
-                .collection("ninjas")
-                .doc(doc.id)
-                .update({
-                  geolocation: {
-                    lat: 0,
-                    lng: 0,
-                  },
-                  online: false,
-                });
-            });
-          })
-          .then(() => {
-            fireAuth.signOut().then(() => {
-              console.log("user logout | menu");
-              router.push("/login");
-            });
+      let user = store.state.user;
+      // console.log("user logout | menu123", user);
+      // console.log("user id | logout", user.uid);
+      
+      fireDB
+        .collection("ninjas")
+        .where("user_id", "==", user.uid)
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            fireDB
+              .collection("ninjas")
+              .doc(doc.id)
+              .update({
+                geolocation: {
+                  lat: 0,
+                  lng: 0,
+                },
+                online: false,
+              });
           });
-      }
+        })
+        .then(() => {
+          fireAuth.signOut().then(() => {
+            console.log("user logout | menu");
+            router.push("/login");
+          });
+        });
     };
 
     return {
