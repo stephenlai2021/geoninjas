@@ -94,7 +94,6 @@ export default defineComponent({
               console.log(err);
               renderMap();
             }
-            // { maximumAge: 60000, timeout: 3000 }
           );
         } else {
           // position center by default value
@@ -102,7 +101,6 @@ export default defineComponent({
           renderMap();
         }
       }
-      // });
     });
 
     return {

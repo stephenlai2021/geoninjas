@@ -43,10 +43,7 @@ export default defineComponent({
       // get current user
       store.methods.handleAuthStateChanged();
 
-      let user = store.state.user;
-      // console.log("user logout | menu123", user);
-      // console.log("user id | logout", user.uid);
-      
+      let user = store.state.user;      
       fireDB
         .collection("ninjas")
         .where("user_id", "==", user.uid)

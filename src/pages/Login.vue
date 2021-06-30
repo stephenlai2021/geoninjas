@@ -36,13 +36,12 @@ export default defineComponent({
 
     const login = () => {
       if (email.value && password.value) {
-        // fireDB.collection('ninjas').
         fireAuth
           .signInWithEmailAndPassword(email.value, password.value)
           .then((cred) => {
             console.log("current user | login: ", cred.user);
 
-            store.methods.handleAuthStateChanged()
+            // store.methods.handleAuthStateChanged()
 
             fireDB
               .collection("ninjas")
