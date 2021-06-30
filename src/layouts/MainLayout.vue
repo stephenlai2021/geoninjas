@@ -51,8 +51,8 @@ export default defineComponent({
                   .doc(doc.id)
                   .update({
                     geolocation: {
-                      lat: null,
-                      lng: null,
+                      lat: 0,
+                      lng: 0,
                     },
                     online: false,
                   });

@@ -17,7 +17,7 @@ export default defineComponent({
     const renderMap = () => {
       const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: lat.value, lng: lng.value },
-        zoom: 6,
+        zoom: 3,
         maxZoom: 20,
         minZoom: 3,
         streetViewControl: false,
