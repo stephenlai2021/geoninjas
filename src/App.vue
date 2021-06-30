@@ -11,15 +11,15 @@ export default defineComponent({
   setup() {
     provide("store", store);
 
-    // onMounted(() => {
-    //   fireAuth.onAuthStateChanged(user => {
-    //     if (user) {
-    //       console.log('current user | App.vue: ', user)
-    //     }
-    //   })
+    onMounted(() => {
+      // fireAuth.onAuthStateChanged(user => {
+      //   if (user) {
+      //     console.log('current user | App.vue: ', user)
+      //   }
+      // })
 
-    //   // store.methods.handleAuthStateChanged();
-    // });
+      store.methods.handleAuthStateChanged();
+    });
   },
 });
 </script>

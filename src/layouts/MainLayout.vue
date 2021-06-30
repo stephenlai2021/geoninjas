@@ -32,16 +32,18 @@ export default defineComponent({
 
     const user = ref(null);
 
-    onMounted(() => {
-      store.methods.handleAuthStateChanged()
-      if (store.state.user) user.value = store.state.user
-      if (!store.state.user) user.value = null
+    onMounted(() => {      
+      fireAuth.onAuthStateChanged((_user) => {
+        if (_user) user.value = _user;
+        if (!_user) user.value = null;
+      });
     });
 
     const logout = () => {
       // get current user
+      store.methods.handleAuthStateChanged()
       let user = store.state.user;
-      // console.log("user logout | menu", user);
+      console.log("user logout | menu123", user);
 
       if (user) {
         console.log("user id | logout", user.uid);

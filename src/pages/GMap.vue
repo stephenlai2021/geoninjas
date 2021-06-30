@@ -58,7 +58,7 @@ export default defineComponent({
       user.value = store.state.user
 
       if (user.value) {
-        console.log("current user id | store in GMap: ", user.value.uid);
+        console.log("current user | store in GMap: ", user.value);
 
         // get user geolocation
         if (navigator.geolocation) {

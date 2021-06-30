@@ -42,8 +42,7 @@ export default defineComponent({
           .then((cred) => {
             console.log("current user | login: ", cred.user);
 
-            store.state.user = cred.user
-            console.log("current user | store: ", store.state.user);
+            store.methods.handleAuthStateChanged()
 
             fireDB
               .collection("ninjas")

@@ -15,11 +15,8 @@ const routes = [
               console.log("user is logged in | route guard");
               next()
             }
-            // else {
-            if (!user) {
+            else {
               console.log("user logged out | route guard");
-              
-              // problem
               next('/login')
             }
           })
