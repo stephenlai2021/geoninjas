@@ -40,9 +40,7 @@ export default defineComponent({
           .signInWithEmailAndPassword(email.value, password.value)
           .then((cred) => {
             console.log("current user | login: ", cred.user);
-
-            // store.methods.handleAuthStateChanged()
-
+            
             fireDB
               .collection("ninjas")
               .where("user_id", "==", cred.user.uid)
