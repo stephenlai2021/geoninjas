@@ -38,6 +38,9 @@ export default defineComponent({
     });
 
     const logout = () => {
+      // get current user
+      // let user = fireAuth.currentUser
+
       fireAuth.onAuthStateChanged((user) => {
         if (user) {
           fireDB
