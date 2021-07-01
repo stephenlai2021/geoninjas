@@ -6,9 +6,41 @@ const state = reactive({
   authUser: null,
   message: false,
   comments: [],
+  lat: 0,
+  lng: 0,
 });
 
 const methods = {
+  renderMap() {
+  },
+  getNinjasLocation() {
+    // if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      state.lat = pos.coords.latitude;
+      state.lng = pos.coords.longitude;
+
+      fireDB
+        .collection("ninjas")
+        .where("user_id", "==", state.user.uid)
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            fireDB
+              .collection("ninjas")
+              .doc(doc.id)
+              .update({
+                geolocation: {
+                  lat: state.lat,
+                  lng: state.lng,
+                },
+              });
+          });
+        });
+    }, err => {
+      console.log('error message: ', err.message)
+    });
+    // }
+  },
   addComment(data) {
     fireDB
       .collection("ninja-comments")
@@ -16,7 +48,7 @@ const methods = {
       .then(() => {
         state.message = true;
       });
-      state.comments.unshift(data)
+    state.comments.unshift(data);
   },
   getAuthUser() {
     fireDB
@@ -35,9 +67,9 @@ const methods = {
       .where("to", "==", to)
       .get()
       .then((snapshot) => {
-        state.comments = snapshot.docs.map(doc => {
-          return { ...doc.data() }
-        })
+        state.comments = snapshot.docs.map((doc) => {
+          return { ...doc.data() };
+        });
       });
   },
   handleAuthStateChanged() {

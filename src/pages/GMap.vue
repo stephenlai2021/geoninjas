@@ -7,7 +7,7 @@
 <script>
 import { defineComponent, onMounted, ref, inject } from "vue";
 import { fireAuth, fireDB } from "src/boot/firebase";
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   setup() {
@@ -18,11 +18,12 @@ export default defineComponent({
 
     const store = inject("store");
 
-    const router = useRouter()
+    const router = useRouter();
 
     const renderMap = () => {
       const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: lat.value, lng: lng.value },
+        // center: { lat: store.state.lat, lng: store.state.lng },
         zoom: 3,
         maxZoom: 20,
         minZoom: 3,
@@ -37,17 +38,42 @@ export default defineComponent({
           snapshot.forEach((doc) => {
             let data = doc.data();
             if (data.geolocation) {
+              // store.state.lat = data.geolocation.lat
+              // store.state.lng = data.geolocation.lng
+
+              const infowindow = new google.maps.InfoWindow({
+                content: data.alias,
+                // content: 'hi, there !'
+              });
+
               let marker = new google.maps.Marker({
                 position: {
                   lat: data.geolocation.lat,
                   lng: data.geolocation.lng,
+                  // lat: store.state.lat,
+                  // lng: store.state.lng,
+                },
+                // icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+                // title: "Hello World!",
+                label: {
+                  text: data.alias.charAt(0).toUpperCase(),
+                  color: "white",
                 },
                 map,
               });
               // add click event to marker
               marker.addListener("click", () => {
-                console.log("user id: ", doc.id);
-                router.push(`/profile/${doc.data().alias}`)
+                infowindow.open({
+                  anchor: marker,
+                  map,
+                  shouldFocus: false,
+                });
+
+                // console.log("user id: ", doc.id);
+                // router.push(`/profile/${doc.data().alias}`)
+
+                map.setZoom(5);
+                map.setCenter(marker.getPosition());
               });
             }
           });
@@ -56,53 +82,56 @@ export default defineComponent({
 
     onMounted(() => {
       // get current user
-      store.methods.handleAuthStateChanged()
-      user.value = store.state.user
+      store.methods.handleAuthStateChanged();
+      user.value = store.state.user;
 
-      if (user.value) {
-        console.log("current user | store in GMap: ", user.value);
+      renderMap();
 
-        // get user geolocation
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              lat.value = pos.coords.latitude;
-              lng.value = pos.coords.longitude;
+      // if (user.value) {
+      console.log("current user | store in GMap: ", user.value);
 
-              // update ninja geolocation
-              fireDB
-                .collection("ninjas")
-                .where("user_id", "==", user.value.uid)
-                .get()
-                .then((snapshot) => {
-                  // .onSnapshot((snapshot) => {
-                  snapshot.forEach((doc) => {
-                    fireDB
-                      .collection("ninjas")
-                      .doc(doc.id)
-                      .update({
-                        geolocation: {
-                          lat: lat.value,
-                          lng: lng.value,
-                        },
-                      });
-                  });
-                })
-                .then(() => {
-                  renderMap();
+      // get user geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            lat.value = pos.coords.latitude;
+            lng.value = pos.coords.longitude;
+            // store.state.lat = pos.coords.latitude;
+            // store.state.lng = pos.coords.longitude;
+
+            fireDB
+              .collection("ninjas")
+              .where("user_id", "==", user.value.uid)
+              .get()
+              .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                  fireDB
+                    .collection("ninjas")
+                    .doc(doc.id)
+                    .update({
+                      geolocation: {
+                        lat: lat.value,
+                        lng: lng.value,
+                      },
+                    });
                 });
-            },
-            (err) => {
-              console.log(err);
-              renderMap();
-            }
-          );
-        } else {
-          // position center by default value
-          console.log("there is no user logged in | GMap");
-          renderMap();
-        }
+              })
+              .then(() => {
+                renderMap();
+              });
+          },
+          (err) => {
+            console.log(err);
+            renderMap();
+          }
+        );
+      } else {
+        // position center by default value
+        console.log("there is no user logged in | GMap");
+        renderMap();
       }
+
+      // }
     });
 
     return {

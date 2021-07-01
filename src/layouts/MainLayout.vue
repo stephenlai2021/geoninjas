@@ -13,6 +13,7 @@
         </div>
       </nav>
     </div>
+
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -49,7 +50,6 @@ export default defineComponent({
         .where("user_id", "==", user.uid)
         .get()
         .then((snapshot) => {
-        // .onSnapshot((snapshot) => {
           snapshot.forEach((doc) => {
             fireDB
               .collection("ninjas")
@@ -60,12 +60,18 @@ export default defineComponent({
                   lng: 0,
                 },
                 online: false,
-              });
+              })
+              .then(() => {
+                // store.state.lat = 0
+                // store.state.lng = 0
+                // router.push('/')
+              })
           });
         })
         .then(() => {
           fireAuth.signOut().then(() => {
             console.log("user logout | menu");
+            // router.push("/");
             router.push("/login");
           });
         });
