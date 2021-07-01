@@ -7,6 +7,7 @@
 <script>
 import { defineComponent, onMounted, ref, inject } from "vue";
 import { fireAuth, fireDB } from "src/boot/firebase";
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   setup() {
@@ -16,6 +17,8 @@ export default defineComponent({
     const user = ref(null);
 
     const store = inject("store");
+
+    const router = useRouter()
 
     const renderMap = () => {
       const map = new google.maps.Map(document.getElementById("map"), {
@@ -30,8 +33,6 @@ export default defineComponent({
       fireDB
         .collection("ninjas")
         .where("online", "==", true)
-        // .get()
-        // .then((snapshot) => {
         .onSnapshot((snapshot) => {
           snapshot.forEach((doc) => {
             let data = doc.data();
@@ -46,6 +47,7 @@ export default defineComponent({
               // add click event to marker
               marker.addListener("click", () => {
                 console.log("user id: ", doc.id);
+                router.push(`/profile/${doc.data().alias}`)
               });
             }
           });

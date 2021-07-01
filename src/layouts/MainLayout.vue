@@ -49,6 +49,7 @@ export default defineComponent({
         .where("user_id", "==", user.uid)
         .get()
         .then((snapshot) => {
+        // .onSnapshot((snapshot) => {
           snapshot.forEach((doc) => {
             fireDB
               .collection("ninjas")

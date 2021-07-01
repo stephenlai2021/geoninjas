@@ -1,11 +1,45 @@
-import { reactive } from 'vue'
-import { fireAuth, fireDB } from 'src/boot/firebase';
+import { reactive } from "vue";
+import { fireAuth, fireDB } from "src/boot/firebase";
 
 const state = reactive({
-  user: null
-})
+  user: null,
+  authUser: null,
+  message: false,
+  comments: [],
+});
 
 const methods = {
+  addComment(data) {
+    fireDB
+      .collection("ninja-comments")
+      .add(data)
+      .then(() => {
+        state.message = true;
+      });
+      state.comments.unshift(data)
+  },
+  getAuthUser() {
+    fireDB
+      .collection("ninjas")
+      .where("user_id", "==", state.user.uid)
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          state.authUser = doc.data();
+        });
+      });
+  },
+  getComments(to) {
+    fireDB
+      .collection("ninja-comments")
+      .where("to", "==", to)
+      .get()
+      .then((snapshot) => {
+        state.comments = snapshot.docs.map(doc => {
+          return { ...doc.data() }
+        })
+      });
+  },
   handleAuthStateChanged() {
     fireAuth.onAuthStateChanged((user) => {
       if (user) {
@@ -13,10 +47,10 @@ const methods = {
         console.log("current user id | store: ", state.user.uid);
       }
     });
-  }
-}
+  },
+};
 
 export default {
   state,
-  methods
-}
+  methods,
+};
