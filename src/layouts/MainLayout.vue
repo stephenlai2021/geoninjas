@@ -43,7 +43,9 @@ export default defineComponent({
 
     const logout = () => {
       // get current user
-      let user = fireAuth.currentUser
+      store.methogds.handleAuthStateChanged()
+
+      let user = store.state.user
       console.log('current user before logout', user)
 
       fireDB
