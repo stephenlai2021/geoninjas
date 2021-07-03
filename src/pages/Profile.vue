@@ -85,8 +85,8 @@ export default defineComponent({
     });
 
     const addComment = () => {
-      store.methods.getAuthUser()
-      
+      // store.methods.getAuthUser()
+
       if (newComment.value) {
         feedback.value = null;
 
