@@ -45,13 +45,13 @@ export default defineComponent({
       // get current user
       // store.methogds.handleAuthStateChanged()
 
-      let user = store.state.user
-      console.log('current user before logout', user)
+      // let user = store.state.user
+      // console.log('current user before logout', user)
 
       // reset current user geolocation and online state
       fireDB
         .collection("ninjas")
-        .where("user_id", "==", user.uid)
+        .where("user_id", "==", user.value.uid)
         .get()
         .then((snapshot) => {
           snapshot.forEach((doc) => {
