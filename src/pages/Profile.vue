@@ -53,11 +53,7 @@ export default defineComponent({
         .then((snapshot) => {
           snapshot.forEach((doc) => {
             store.state.loginUser = doc.data()
-            if (doc.id === route.params.id) {
-              console.log('from id: ', doc.id)
-              console.log('to id: ', route.params.id)
-              console.log('current user alias: ', doc.data().alias)
-              console.log('id matched !')
+            if (doc.id === route.params.id) {            
               isMe.value = false
             }
           });
@@ -77,16 +73,11 @@ export default defineComponent({
     });
 
     const addComment = () => {
-      // store.methods.getAuthUser()
-      // let user = store.state.authUser
-      // console.log('auth user | addComment', user)
-      
       if (newComment.value) {
         feedback.value = null;
 
         const data = {
           to: route.params.id,
-          // from: store.state.authUser.alias,
           from: store.state.loginUser.alias,
           comment: newComment.value,
           time: Date.now(),

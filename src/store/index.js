@@ -20,8 +20,8 @@ const methods = {
       .add(data)
       .then(() => {
         state.message = true;
+        state.comments.unshift(data);
       });
-    state.comments.unshift(data);
   },
   getAuthUser() {
     fireDB
@@ -37,7 +37,7 @@ const methods = {
   getComments(to) {
     fireDB
       .collection("ninja-comments")
-      .where("to", "==", to) 
+      .where("to", "==", to)
       // .get()
       // .then((snapshot) => {
       .onSnapshot((snapshot) => {
