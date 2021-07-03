@@ -12,12 +12,6 @@ export default defineComponent({
     provide("store", store);
 
     onMounted(() => {
-      // fireAuth.onAuthStateChanged(user => {
-      //   if (user) {
-      //     console.log('current user | App.vue: ', user)
-      //   }
-      // })
-
       store.methods.handleAuthStateChanged();
     });
   },

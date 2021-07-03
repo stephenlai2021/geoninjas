@@ -43,8 +43,6 @@ export default defineComponent({
 
     const logout = () => {
       // get current user
-      // store.methods.handleAuthStateChanged();
-      // let user = store.state.user;
       let user = fireAuth.currentUser
       console.log('current user before logout', user)
 
@@ -64,11 +62,6 @@ export default defineComponent({
                 },
                 online: false,
               })
-              .then(() => {
-                // store.state.lat = 0
-                // store.state.lng = 0
-                // router.push('/')
-              });
           });
         })
         .then(() => {
@@ -79,6 +72,11 @@ export default defineComponent({
           });
         });
     };
+
+    // const logout = () => {
+    //   store.methods.logout()
+    //   if (store.state.logout) router.push('/login')
+    // }
 
     return {
       user,

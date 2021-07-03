@@ -1,16 +1,53 @@
 import { reactive } from "vue";
 import { fireAuth, fireDB } from "src/boot/firebase";
+import { userRouter } from 'vue-router'
 
 const state = reactive({
   user: null,
   authUser: null,
   message: false,
   comments: [],
+  logout: false,
   lat: 0,
   lng: 0,
 });
 
 const methods = {
+  async logout() {
+     try {
+       // get current user
+      //  const user = fireAuth.currentUser;
+       const user = state.user;
+
+       // set user online status to false
+       await fireDB
+         .collection("ninjas")
+         .where("user_id", "==", user.uid)
+         .get()
+         .then((snapshot) => {
+           snapshot.forEach((doc) => {
+             fireDB
+               .collection("ninjas")
+               .doc(doc.id)
+               .update({
+                 geolocation: {
+                   lat: 0,
+                   lng: 0,
+                 },
+                 online: false,
+               });
+           });
+         });
+       console.log(`user: ${user} is logged out`);
+
+       state.logout = true;
+
+       // logout user
+       await fireAuth.signOut();
+     } catch (err) {
+       console.log(`logout error: `, err.message);
+     }
+  },
   renderMap() {
   },
   getNinjasLocation() {

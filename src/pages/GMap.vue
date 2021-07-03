@@ -69,11 +69,11 @@ export default defineComponent({
                   shouldFocus: false,
                 });
 
-                // console.log("user id: ", doc.id);
-                // router.push(`/profile/${doc.data().alias}`)
-
                 map.setZoom(5);
                 map.setCenter(marker.getPosition());
+
+                console.log("user id: ", doc.id);
+                router.push(`/profile/${doc.data().alias}`)
               });
             }
           });
