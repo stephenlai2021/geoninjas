@@ -36,10 +36,10 @@ const methods = {
   getComments(to) {
     fireDB
       .collection("ninja-comments")
-      .where("to", "==", to)      
-      // .where("alias", "!=", from)
+      .where("to", "==", to) 
       .get()
-      .then((snapshot) => {
+      // .then((snapshot) => {
+      .onSnapshot((snapshot) => {
         state.comments = snapshot.docs.map((doc) => {
           return { ...doc.data() };
         });
