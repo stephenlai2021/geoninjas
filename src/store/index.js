@@ -20,8 +20,8 @@ const methods = {
       .add(data)
       .then(() => {
         state.message = true;
-        state.comments.unshift(data);
       });
+    state.comments.unshift(data);
   },
   getAuthUser() {
     fireDB
