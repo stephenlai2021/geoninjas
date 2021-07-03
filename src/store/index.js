@@ -37,7 +37,7 @@ const methods = {
     fireDB
       .collection("ninja-comments")
       .where("to", "==", to) 
-      .get()
+      // .get()
       // .then((snapshot) => {
       .onSnapshot((snapshot) => {
         state.comments = snapshot.docs.map((doc) => {
