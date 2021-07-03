@@ -50,6 +50,8 @@ export default defineComponent({
                   fireDB.collection("ninjas").doc(doc.id).update({
                     online: true,
                   });
+                  // store.state.authUser = doc
+                  // console.log('get authUser: ', store.state.authUser)
                 });
               }).then(() => {
                 router.push("/");

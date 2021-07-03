@@ -67,7 +67,6 @@ export default defineComponent({
         .then(() => {
           fireAuth.signOut().then(() => {
             console.log("user logout successfully !");
-            // router.push("/");
             router.push("/login");
           });
         });

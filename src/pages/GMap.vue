@@ -73,7 +73,7 @@ export default defineComponent({
                 map.setCenter(marker.getPosition());
 
                 console.log("user id: ", doc.id);
-                router.push(`/profile/${doc.data().alias}`)
+                router.push(`/profile/${doc.id}`)
               });
             }
           });

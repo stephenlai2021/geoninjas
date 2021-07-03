@@ -8,8 +8,8 @@
           <div class="grey-text text-darken-2">{{ comment.comment }}</div>
         </li>
       </ul>
-      <!-- <form @submit.prevent="addComment"> -->
-      <form>
+      <form v-if="isMe">
+      <!-- <form> -->
         <div class="field">
           <label for="comment">Add a comment</label>
           <input
@@ -27,7 +27,7 @@
 
 <script>
 import { defineComponent, ref, inject, onMounted } from "vue";
-import { fireDB } from "src/boot/firebase";
+import { fireAuth, fireDB } from "src/boot/firebase";
 import { useRoute } from "vue-router";
 
 export default defineComponent({
@@ -36,17 +36,44 @@ export default defineComponent({
     const newComment = ref(null);
     const feedback = ref(null);
     const comments = ref([]);
+    const isMe = ref(true);
 
     const store = inject("store");
 
     const route = useRoute();
 
     onMounted(() => {
-      // get auth user
-      store.methods.getAuthUser();
+      store.methods.handleAuthStateChanged()
+      let user = store.state.user
+
+      fireDB
+        .collection("ninjas")
+        .where("user_id", "==", user.uid)
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            // fireDB
+            //   .collection("ninjas")
+            //   .doc(doc.id)
+            //   .update({
+            //     geolocation: {
+            //       lat: 0,
+            //       lng: 0,
+            //     },
+            //     online: false,
+            //   })
+            if (doc.id === route.params.id) {
+              console.log('from id: ', doc.id)
+              console.log('to id: ', route.params.id)
+              console.log('id matched !')
+              isMe.value = false
+            }
+          });
+        })
 
       // get profile data
-      fireDB.collection("ninjas")
+      fireDB
+        .collection("ninjas")
         .doc(route.params.id)
         .get()
         .then((doc) => {
@@ -58,6 +85,8 @@ export default defineComponent({
     });
 
     const addComment = () => {
+      store.methods.getAuthUser()
+      
       if (newComment.value) {
         feedback.value = null;
 
@@ -65,18 +94,19 @@ export default defineComponent({
           to: route.params.id,
           from: store.state.authUser.alias,
           comment: newComment.value,
-          time: Date.now()
-        }
+          time: Date.now(),
+        };
 
         store.methods.addComment(data);
-        newComment.value = null
-
+        newComment.value = null;
       } else {
         feedback.value = "You must enter a comment to add it";
       }
     };
 
     return {
+      // user,
+      isMe,
       store,
       profile,
       newComment,

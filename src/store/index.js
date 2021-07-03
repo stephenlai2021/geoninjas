@@ -13,71 +13,6 @@ const state = reactive({
 });
 
 const methods = {
-  async logout() {
-     try {
-       // get current user
-      //  const user = fireAuth.currentUser;
-       const user = state.user;
-
-       // set user online status to false
-       await fireDB
-         .collection("ninjas")
-         .where("user_id", "==", user.uid)
-         .get()
-         .then((snapshot) => {
-           snapshot.forEach((doc) => {
-             fireDB
-               .collection("ninjas")
-               .doc(doc.id)
-               .update({
-                 geolocation: {
-                   lat: 0,
-                   lng: 0,
-                 },
-                 online: false,
-               });
-           });
-         });
-       console.log(`user: ${user} is logged out`);
-
-       state.logout = true;
-
-       // logout user
-       await fireAuth.signOut();
-     } catch (err) {
-       console.log(`logout error: `, err.message);
-     }
-  },
-  renderMap() {
-  },
-  getNinjasLocation() {
-    // if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      state.lat = pos.coords.latitude;
-      state.lng = pos.coords.longitude;
-
-      fireDB
-        .collection("ninjas")
-        .where("user_id", "==", state.user.uid)
-        .get()
-        .then((snapshot) => {
-          snapshot.forEach((doc) => {
-            fireDB
-              .collection("ninjas")
-              .doc(doc.id)
-              .update({
-                geolocation: {
-                  lat: state.lat,
-                  lng: state.lng,
-                },
-              });
-          });
-        });
-    }, err => {
-      console.log('error message: ', err.message)
-    });
-    // }
-  },
   addComment(data) {
     fireDB
       .collection("ninja-comments")
@@ -101,7 +36,8 @@ const methods = {
   getComments(to) {
     fireDB
       .collection("ninja-comments")
-      .where("to", "==", to)
+      .where("to", "==", to)      
+      // .where("alias", "!=", from)
       .get()
       .then((snapshot) => {
         state.comments = snapshot.docs.map((doc) => {

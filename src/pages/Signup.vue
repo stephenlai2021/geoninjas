@@ -61,7 +61,7 @@ export default defineComponent({
               .then((cred) => {
                 console.log("signup user: ", cred.user);
                 ref.set({
-                  alias: slug.value,
+                  alias: alias.value,
                   email: email.value,
                   geolocation: null,
                   online: true,
