@@ -52,7 +52,7 @@ export default defineComponent({
         .get()
         .then((snapshot) => {
           snapshot.forEach((doc) => {
-            store.state.loginUser = doc.data().alias
+            store.state.loginUser = doc.data()
             if (doc.id === route.params.id) {
               console.log('from id: ', doc.id)
               console.log('to id: ', route.params.id)
