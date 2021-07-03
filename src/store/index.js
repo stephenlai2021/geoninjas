@@ -8,6 +8,7 @@ const state = reactive({
   message: false,
   comments: [],
   logout: false,
+  loginUser: null,
   lat: 0,
   lng: 0,
 });

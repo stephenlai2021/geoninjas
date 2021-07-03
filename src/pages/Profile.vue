@@ -52,19 +52,11 @@ export default defineComponent({
         .get()
         .then((snapshot) => {
           snapshot.forEach((doc) => {
-            // fireDB
-            //   .collection("ninjas")
-            //   .doc(doc.id)
-            //   .update({
-            //     geolocation: {
-            //       lat: 0,
-            //       lng: 0,
-            //     },
-            //     online: false,
-            //   })
+            store.state.loginUser = doc.data().alias
             if (doc.id === route.params.id) {
               console.log('from id: ', doc.id)
               console.log('to id: ', route.params.id)
+              console.log('current user alias: ', doc.data().alias)
               console.log('id matched !')
               isMe.value = false
             }
@@ -86,13 +78,16 @@ export default defineComponent({
 
     const addComment = () => {
       // store.methods.getAuthUser()
-
+      // let user = store.state.authUser
+      // console.log('auth user | addComment', user)
+      
       if (newComment.value) {
         feedback.value = null;
 
         const data = {
           to: route.params.id,
-          from: store.state.authUser.alias,
+          // from: store.state.authUser.alias,
+          from: store.state.loginUser.alias,
           comment: newComment.value,
           time: Date.now(),
         };
