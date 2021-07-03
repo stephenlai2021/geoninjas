@@ -32,6 +32,7 @@ export default defineComponent({
     const store = inject("store");
 
     const user = ref(null);
+    const drawer = ref(false);
 
     onMounted(() => {
       fireAuth.onAuthStateChanged((_user) => {
@@ -42,9 +43,11 @@ export default defineComponent({
 
     const logout = () => {
       // get current user
-      store.methods.handleAuthStateChanged();
+      // store.methods.handleAuthStateChanged();
+      // let user = store.state.user;
+      let user = fireAuth.currentUser
+      console.log('current user before logout', user)
 
-      let user = store.state.user;      
       fireDB
         .collection("ninjas")
         .where("user_id", "==", user.uid)
@@ -65,12 +68,12 @@ export default defineComponent({
                 // store.state.lat = 0
                 // store.state.lng = 0
                 // router.push('/')
-              })
+              });
           });
         })
         .then(() => {
           fireAuth.signOut().then(() => {
-            console.log("user logout | menu");
+            console.log("user logout successfully !");
             // router.push("/");
             router.push("/login");
           });
@@ -80,6 +83,7 @@ export default defineComponent({
     return {
       user,
       logout,
+      drawer,
     };
   },
 });
@@ -88,5 +92,14 @@ export default defineComponent({
 <style scoped>
 .title {
   line-height: 64px;
+}
+.row {
+  margin-bottom: 0;
+}
+span.q-btn_content {
+  margin-bottom: 0;
+  border: 1px solid red;
+}
+q-btn {
 }
 </style>
