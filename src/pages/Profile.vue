@@ -3,9 +3,10 @@
     <div v-if="profile" class="card">
       <h2 class="deep-purple-text center">{{ profile.alias }}'s Wall</h2>
       <ul class="comments collection">
-        <li v-for="(comment, index) in store.state.comments" :key="index">
+        <li v-for="(comment) in store.state.comments" :key="comment.from">
           <div class="deep-purple-text">{{ comment.from }}</div>
           <div class="grey-text text-darken-2">{{ comment.comment }}</div>
+          <button @click="deleteComment(comment.from)">Delete</button>
         </li>
       </ul>
       <form v-if="isMe">
@@ -72,6 +73,19 @@ export default defineComponent({
       store.methods.getComments(route.params.id);
     });
 
+    const deleteComment = (id) => {
+      console.log('from: ', id)
+      fireDB.collection('ninja-comments')
+      .where("from", "==", id)
+      .get()
+      .then(snapshot => {
+        snapshot.docs.map(doc => {
+
+        })
+      })
+      
+    }
+
     const addComment = () => {
       if (newComment.value) {
         feedback.value = null;
@@ -91,7 +105,7 @@ export default defineComponent({
     };
 
     return {
-      // user,
+      deleteComment,
       isMe,
       store,
       profile,
